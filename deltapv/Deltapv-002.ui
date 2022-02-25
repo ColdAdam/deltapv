@@ -1,0 +1,880 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <author>Adam Thomas</author>
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1100</width>
+    <height>800</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QStackedWidget" name="stackedWidget">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>1091</width>
+      <height>761</height>
+     </rect>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::NoFrame</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Plain</enum>
+    </property>
+    <property name="currentIndex">
+     <number>0</number>
+    </property>
+    <widget class="QWidget" name="page_modelSetup">
+     <widget class="QTabWidget" name="tabWidget_plots">
+      <property name="geometry">
+       <rect>
+        <x>490</x>
+        <y>0</y>
+        <width>600</width>
+        <height>600</height>
+       </rect>
+      </property>
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="tab_iv">
+       <attribute name="title">
+        <string>IV Curve</string>
+       </attribute>
+       <widget class="QGraphicsView" name="graphicsView_iv">
+        <property name="geometry">
+         <rect>
+          <x>-1</x>
+          <y>-1</y>
+          <width>601</width>
+          <height>571</height>
+         </rect>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="tab_model">
+       <attribute name="title">
+        <string>Model Layout</string>
+       </attribute>
+       <widget class="QGraphicsView" name="graphicsView_model">
+        <property name="geometry">
+         <rect>
+          <x>-1</x>
+          <y>-1</y>
+          <width>601</width>
+          <height>571</height>
+         </rect>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="tab_band">
+       <attribute name="title">
+        <string>Band Diagram</string>
+       </attribute>
+       <widget class="QGraphicsView" name="graphicsView_band">
+        <property name="geometry">
+         <rect>
+          <x>-1</x>
+          <y>-1</y>
+          <width>601</width>
+          <height>571</height>
+         </rect>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="tab_charge">
+       <attribute name="title">
+        <string>Charge</string>
+       </attribute>
+       <widget class="QGraphicsView" name="graphicsView_charge">
+        <property name="geometry">
+         <rect>
+          <x>-1</x>
+          <y>-1</y>
+          <width>601</width>
+          <height>571</height>
+         </rect>
+        </property>
+       </widget>
+      </widget>
+     </widget>
+     <widget class="QPushButton" name="pushButton_simulate">
+      <property name="geometry">
+       <rect>
+        <x>980</x>
+        <y>720</y>
+        <width>101</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Simulate</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="pushButton_makedesign">
+      <property name="geometry">
+       <rect>
+        <x>830</x>
+        <y>720</y>
+        <width>101</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Make Design</string>
+      </property>
+     </widget>
+     <widget class="QFrame" name="frame_inputs">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>40</y>
+        <width>471</width>
+        <height>711</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::NoFrame</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <widget class="QWidget" name="gridLayoutWidget">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>191</width>
+         <height>231</height>
+        </rect>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_inputs">
+        <item row="6" column="0">
+         <widget class="QLabel" name="label_wfback">
+          <property name="text">
+           <string>PhiML</string>
+          </property>
+          <property name="buddy">
+           <cstring>lineEdit_wfback</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_nvelright">
+          <property name="text">
+           <string>Snr</string>
+          </property>
+          <property name="buddy">
+           <cstring>lineEdit_nvelright</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="0">
+         <widget class="QLabel" name="label_wffront">
+          <property name="text">
+           <string>PhiM0</string>
+          </property>
+          <property name="buddy">
+           <cstring>lineEdit_wffront</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_grid">
+          <property name="text">
+           <string>n</string>
+          </property>
+          <property name="buddy">
+           <cstring>lineEdit_grid</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLineEdit" name="lineEdit_nvelleft">
+          <property name="inputMethodHints">
+           <set>Qt::ImhDigitsOnly</set>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="1">
+         <widget class="QLineEdit" name="lineEdit_wffront">
+          <property name="inputMethodHints">
+           <set>Qt::ImhDigitsOnly</set>
+          </property>
+          <property name="text">
+           <string>-1</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_nvelleft">
+          <property name="text">
+           <string>Snl</string>
+          </property>
+          <property name="buddy">
+           <cstring>lineEdit_nvelleft</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="2">
+         <widget class="QLabel" name="label_nvelleftunits">
+          <property name="text">
+           <string>cm / s</string>
+          </property>
+          <property name="buddy">
+           <cstring>lineEdit_nvelleft</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QLineEdit" name="lineEdit_pvelleft">
+          <property name="inputMethodHints">
+           <set>Qt::ImhDigitsOnly</set>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QLabel" name="label_pvelright">
+          <property name="text">
+           <string>Spr</string>
+          </property>
+          <property name="buddy">
+           <cstring>lineEdit_pvelright</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="label_pvelleft">
+          <property name="text">
+           <string>Spl</string>
+          </property>
+          <property name="buddy">
+           <cstring>lineEdit_pvelleft</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="2">
+         <widget class="QLabel" name="label_nvelrightunits">
+          <property name="text">
+           <string>cm / s</string>
+          </property>
+          <property name="buddy">
+           <cstring>lineEdit_nvelright</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="1">
+         <widget class="QLineEdit" name="lineEdit_pvelright">
+          <property name="inputMethodHints">
+           <set>Qt::ImhDigitsOnly</set>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="1">
+         <widget class="QLineEdit" name="lineEdit_wfback">
+          <property name="inputMethodHints">
+           <set>Qt::ImhDigitsOnly</set>
+          </property>
+          <property name="text">
+           <string>-1</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="2">
+         <widget class="QLabel" name="label_pvelrightunits">
+          <property name="text">
+           <string>cm / s</string>
+          </property>
+          <property name="buddy">
+           <cstring>lineEdit_pvelright</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="2">
+         <widget class="QLabel" name="label_pvelleftunits">
+          <property name="text">
+           <string>cm / s</string>
+          </property>
+          <property name="buddy">
+           <cstring>lineEdit_pvelleft</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="2">
+         <widget class="QLabel" name="label_wffrontunits">
+          <property name="text">
+           <string>eV</string>
+          </property>
+          <property name="buddy">
+           <cstring>lineEdit_wffront</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="2">
+         <widget class="QLabel" name="label_wfbackunits">
+          <property name="text">
+           <string>eV</string>
+          </property>
+          <property name="buddy">
+           <cstring>lineEdit_wfback</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QLineEdit" name="lineEdit_nvelright">
+          <property name="inputMethodHints">
+           <set>Qt::ImhDigitsOnly</set>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="2">
+         <widget class="QLabel" name="label_gridtext">
+          <property name="text">
+           <string>Grid Size</string>
+          </property>
+          <property name="buddy">
+           <cstring>lineEdit_grid</cstring>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLineEdit" name="lineEdit_grid">
+          <property name="inputMethodHints">
+           <set>Qt::ImhDigitsOnly</set>
+          </property>
+          <property name="text">
+           <string>500</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QComboBox" name="comboBox_lightsource">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>260</y>
+         <width>141</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <item>
+        <property name="text">
+         <string>sun</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>white</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>monochromatic</string>
+        </property>
+       </item>
+      </widget>
+      <widget class="QLabel" name="label_lightsource">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>240</y>
+         <width>91</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Light Source</string>
+       </property>
+       <property name="buddy">
+        <cstring>comboBox_lightsource</cstring>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="pushButton_loadmaterial">
+       <property name="geometry">
+        <rect>
+         <x>360</x>
+         <y>320</y>
+         <width>101</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Load Material</string>
+       </property>
+      </widget>
+      <widget class="QToolButton" name="toolButton_moveup">
+       <property name="geometry">
+        <rect>
+         <x>360</x>
+         <y>460</y>
+         <width>28</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Up</string>
+       </property>
+      </widget>
+      <widget class="QToolButton" name="toolButton_movedown">
+       <property name="geometry">
+        <rect>
+         <x>360</x>
+         <y>490</y>
+         <width>51</width>
+         <height>22</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Down</string>
+       </property>
+      </widget>
+      <widget class="QTableWidget" name="tableWidget_modellayout">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>320</y>
+         <width>351</width>
+         <height>191</height>
+        </rect>
+       </property>
+       <attribute name="horizontalHeaderDefaultSectionSize">
+        <number>115</number>
+       </attribute>
+       <attribute name="verticalHeaderDefaultSectionSize">
+        <number>30</number>
+       </attribute>
+       <column>
+        <property name="text">
+         <string>Layers</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>L (cm)</string>
+        </property>
+       </column>
+       <column>
+        <property name="text">
+         <string>N (1/cm^3)</string>
+        </property>
+       </column>
+      </widget>
+      <widget class="QPushButton" name="pushButton_remove">
+       <property name="geometry">
+        <rect>
+         <x>360</x>
+         <y>350</y>
+         <width>101</width>
+         <height>23</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Remove</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QLabel" name="label_page1title">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>151</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>DeltaPV Model Setup</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="page_materialEditor">
+     <widget class="QFrame" name="frame">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>90</y>
+        <width>301</width>
+        <height>561</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <widget class="QWidget" name="gridLayoutWidget_2">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>0</y>
+         <width>281</width>
+         <height>561</height>
+        </rect>
+       </property>
+       <layout class="QGridLayout" name="gridLayout">
+        <item row="9" column="1">
+         <widget class="QLabel" name="label_tn">
+          <property name="text">
+           <string>tn</string>
+          </property>
+         </widget>
+        </item>
+        <item row="12" column="1">
+         <widget class="QLabel" name="label_Br">
+          <property name="text">
+           <string>Br</string>
+          </property>
+         </widget>
+        </item>
+        <item row="9" column="2">
+         <widget class="QLineEdit" name="lineEdit_tn"/>
+        </item>
+        <item row="3" column="1">
+         <widget class="QLabel" name="label_eps">
+          <property name="text">
+           <string>eps</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="2">
+         <widget class="QLineEdit" name="lineEdit_Chi"/>
+        </item>
+        <item row="5" column="1">
+         <widget class="QLabel" name="label_Nv">
+          <property name="text">
+           <string>Nv</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLabel" name="label_Eg">
+          <property name="text">
+           <string>Eg</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="2">
+         <widget class="QLineEdit" name="lineEdit_Et"/>
+        </item>
+        <item row="6" column="2">
+         <widget class="QLineEdit" name="lineEdit_Ndop"/>
+        </item>
+        <item row="10" column="2">
+         <widget class="QLineEdit" name="lineEdit_tp"/>
+        </item>
+        <item row="8" column="1">
+         <widget class="QLabel" name="label_mp">
+          <property name="text">
+           <string>mp</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="2">
+         <widget class="QLineEdit" name="lineEdit_Eg"/>
+        </item>
+        <item row="1" column="3">
+         <widget class="QLabel" name="label_Egunits">
+          <property name="text">
+           <string>eV</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="3">
+         <widget class="QLabel" name="label_Chiunits">
+          <property name="text">
+           <string>eV</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QLabel" name="label_Et">
+          <property name="text">
+           <string>Et</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="1">
+         <widget class="QLabel" name="label_Nc">
+          <property name="text">
+           <string>Nc</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLabel" name="label_Chi">
+          <property name="text">
+           <string>Chi</string>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="1">
+         <widget class="QLabel" name="label_mn">
+          <property name="text">
+           <string>mn</string>
+          </property>
+         </widget>
+        </item>
+        <item row="11" column="1">
+         <widget class="QLabel" name="label_A">
+          <property name="text">
+           <string>A</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="3">
+         <widget class="QLabel" name="label_Etunits">
+          <property name="text">
+           <string>eV</string>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="2">
+         <widget class="QLineEdit" name="lineEdit_mp"/>
+        </item>
+        <item row="6" column="1">
+         <widget class="QLabel" name="label_Ndop">
+          <property name="text">
+           <string>Ndop</string>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="3">
+         <widget class="QLabel" name="label_Ndopunits">
+          <property name="text">
+           <string>cm^(-3)</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="2">
+         <widget class="QLineEdit" name="lineEdit_Nc"/>
+        </item>
+        <item row="4" column="3">
+         <widget class="QLabel" name="label_Ncunits">
+          <property name="text">
+           <string>cm^(-3)</string>
+          </property>
+         </widget>
+        </item>
+        <item row="11" column="2">
+         <widget class="QLineEdit" name="lineEdit_A"/>
+        </item>
+        <item row="7" column="2">
+         <widget class="QLineEdit" name="lineEdit_mn"/>
+        </item>
+        <item row="3" column="2">
+         <widget class="QLineEdit" name="lineEdit_eps"/>
+        </item>
+        <item row="10" column="1">
+         <widget class="QLabel" name="label_tp">
+          <property name="text">
+           <string>tp</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="3">
+         <widget class="QLabel" name="label_epsunits">
+          <property name="text">
+           <string>unitless</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="2">
+         <widget class="QLineEdit" name="lineEdit_Nv"/>
+        </item>
+        <item row="10" column="3">
+         <widget class="QLabel" name="label_tpunits">
+          <property name="text">
+           <string>s</string>
+          </property>
+         </widget>
+        </item>
+        <item row="11" column="3">
+         <widget class="QLabel" name="label_Aunits">
+          <property name="text">
+           <string>cm^(-1) eV^(-1/2)</string>
+          </property>
+         </widget>
+        </item>
+        <item row="9" column="3">
+         <widget class="QLabel" name="label_tnunits">
+          <property name="text">
+           <string>s</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="3">
+         <widget class="QLabel" name="label_Nvunits">
+          <property name="text">
+           <string>cm^(-3)</string>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="3">
+         <widget class="QLabel" name="label_mnunits">
+          <property name="text">
+           <string>cm^2 / V-s</string>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="3">
+         <widget class="QLabel" name="label_mpunits">
+          <property name="text">
+           <string>cm^2 / V-s</string>
+          </property>
+         </widget>
+        </item>
+        <item row="13" column="1">
+         <widget class="QLabel" name="label_Cn">
+          <property name="text">
+           <string>Cn</string>
+          </property>
+         </widget>
+        </item>
+        <item row="14" column="1">
+         <widget class="QLabel" name="label_Cp">
+          <property name="text">
+           <string>Cp</string>
+          </property>
+         </widget>
+        </item>
+        <item row="12" column="3">
+         <widget class="QLabel" name="label_Brunits">
+          <property name="text">
+           <string>cm^3 / s</string>
+          </property>
+         </widget>
+        </item>
+        <item row="13" column="3">
+         <widget class="QLabel" name="label_Cnunits">
+          <property name="text">
+           <string>cm^6 / s</string>
+          </property>
+         </widget>
+        </item>
+        <item row="14" column="3">
+         <widget class="QLabel" name="label_Cpunits">
+          <property name="text">
+           <string>cm^6 / s</string>
+          </property>
+         </widget>
+        </item>
+        <item row="12" column="2">
+         <widget class="QLineEdit" name="lineEdit_Br"/>
+        </item>
+        <item row="13" column="2">
+         <widget class="QLineEdit" name="lineEdit_Cn"/>
+        </item>
+        <item row="14" column="2">
+         <widget class="QLineEdit" name="lineEdit_Cp"/>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="page_help">
+     <widget class="QTextBrowser" name="textBrowser">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>581</width>
+        <height>421</height>
+       </rect>
+      </property>
+      <property name="html">
+       <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Help:&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;n&lt;/span&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt; (Grid Point): Number of points on a uniform grid&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:12pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;Snl&lt;/span&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt; (cm /s): Electron recombination velocity at front contact&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;Snr&lt;/span&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt; (cm /s): Electron recombination velocity at back contact&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;Spl&lt;/span&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt; (cm /s): Hole recombination velocity at front contact&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;Spr&lt;/span&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt; (cm /s): Hole recombination velocity at back contact&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:12pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;PhiM0&lt;/span&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt; (cm /s, optional): Workfunction of front contact. Defaults to -1.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;PhiML&lt;/span&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt; (cm /s, optional): Workfunction of back contact. Defaults  to -1.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:12pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;Light&lt;/span&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt; &lt;/span&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;Source&lt;/span&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;: Spectrum can be specified with the &lt;/span&gt;&lt;span style=&quot; font-family:'monospace'; font-size:12pt;&quot;&gt;kind&lt;/span&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt; (&lt;/span&gt;&lt;span style=&quot; font-family:'monospace'; font-size:12pt;&quot;&gt;&amp;quot;sun&amp;quot;&lt;/span&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;, &lt;/span&gt;&lt;span style=&quot; font-family:'monospace'; font-size:12pt;&quot;&gt;&amp;quot;white&amp;quot;&lt;/span&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;, &lt;/span&gt;&lt;span style=&quot; font-family:'monospace'; font-size:12pt;&quot;&gt;&amp;quot;monochromatic&amp;quot;&lt;/span&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;, or &lt;/span&gt;&lt;span style=&quot; font-family:'monospace'; font-size:12pt;&quot;&gt;&amp;quot;user&amp;quot;&lt;/span&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;) and the wavelengths, &lt;/span&gt;&lt;span style=&quot; font-family:'monospace'; font-size:12pt;&quot;&gt;Lambda&lt;/span&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;, and corresponding power, &lt;/span&gt;&lt;span style=&quot; font-family:'monospace'; font-size:12pt;&quot;&gt;P_in&lt;/span&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;, respectively.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+     </widget>
+     <widget class="QTextBrowser" name="textBrowser_2">
+      <property name="geometry">
+       <rect>
+        <x>600</x>
+        <y>10</y>
+        <width>491</width>
+        <height>421</height>
+       </rect>
+      </property>
+      <property name="html">
+       <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;Usage:&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:12pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;A model must first be desiged in layers table. The top layer (index = 1) is considered the front of the device. Light enters on the front surface.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:12pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:12pt;&quot;&gt;When the layout is as desired click 'Make Design' to submit the model setup to DeltaPV. The results then can be simulated by clicking 'Simulate'.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+     </widget>
+    </widget>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1100</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuMenu">
+    <property name="title">
+     <string>Menu</string>
+    </property>
+    <addaction name="actionModel_Setup"/>
+    <addaction name="actionMaterial_Editor"/>
+    <addaction name="separator"/>
+    <addaction name="actionHelp"/>
+   </widget>
+   <addaction name="menuMenu"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionModel_Setup">
+   <property name="text">
+    <string>Model Setup</string>
+   </property>
+  </action>
+  <action name="actionHelp">
+   <property name="text">
+    <string>Help</string>
+   </property>
+  </action>
+  <action name="actionMaterial_Editor">
+   <property name="text">
+    <string>Material Editor</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
