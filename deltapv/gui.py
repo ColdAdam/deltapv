@@ -32,6 +32,7 @@ from matplotlib.backends.backend_qt5agg import (FigureCanvasQTAgg,
 
 import matplotlib.pyplot as plt
 import sys
+import numpy as np
 
 
 class MainWindow(object):
@@ -43,11 +44,13 @@ class MainWindow(object):
     """
 
     def __init__(self, window):
+
         self.app = gui_designer.Ui_MainWindow()
         self.app.setupUi(window)
-        # Add needed connections ..
+
         self.graphs()
         self.modelLayout()
+        self.editMaterial()
         self.menuBar()
 
     def graphs(self):
@@ -57,10 +60,22 @@ class MainWindow(object):
         charge = plt.Figure(figsize=(6, 5), dpi=100)
         iv = plt.Figure(figsize=(6, 5), dpi=100)
 
+        def alphaGraph():
+
+            plt_alpha = plt.Figure(figsize=(6, 5), dpi=100)
+            ax1 = plt_alpha.add_subplot(111)
+
+            ax1.set_xlabel("Wavelength (nm)")
+            ax1.set_ylabel(r"Alpha (cm$^{-1}$)")
+            ax1.grid(1)
+
+            return plt_alpha, ax1
+
         self.plt_band = plotting.plot_band_diagram(gui=band)
         self.plt_model = plotting.plot_bars(gui=model)
         self.plt_charge = plotting.plot_charge(gui=charge)
         self.plt_iv = plotting.plot_iv_curve(gui=iv)
+        self.plt_alpha, self.ax_alpha = alphaGraph()
 
         self.graphcanvas_iv = FigureCanvasQTAgg(self.plt_iv)
         self.layoutPlot_iv = QtWidgets.QWidget(self.app.graphicsView_iv)
@@ -94,9 +109,17 @@ class MainWindow(object):
                                                    self.app.graphicsView_charge)  # noqa
         self.gridPlot_charge.addWidget(self.toolbar_charge)
 
+        self.graphcanvas_alpha = FigureCanvasQTAgg(self.plt_alpha)
+        self.layoutPlot_alpha = QtWidgets.QWidget(self.app.graphicsView_alphaGraph)  # noqa
+        self.gridPlot_alpha = QtWidgets.QGridLayout(self.layoutPlot_alpha)
+        self.gridPlot_alpha.addWidget(self.graphcanvas_alpha)
+        self.toolbar_alpha = NavigationToolbar2QT(self.graphcanvas_alpha,
+                                                  self.app.graphicsView_alphaGraph)  # noqa
+        self.gridPlot_alpha.addWidget(self.toolbar_alpha)
+
     def modelLayout(self):
 
-        dir_material = Path(materials.__file__).joinpath("resources")
+        dir_material = Path(materials.__file__).parent.joinpath("resources")
         if not dir_material.exists():
             dir_material = ""
 
@@ -104,7 +127,7 @@ class MainWindow(object):
             pth_material, _ = QFileDialog.getOpenFileName(
                 caption="Open DeltaPV material file",
                 filter="*.yaml",
-                directory=dir_material)
+                directory=str(dir_material))
             if pth_material:
                 pth_material = Path(pth_material)
                 rowPosition = self.app.tableWidget_modellayout.rowCount()
@@ -149,6 +172,72 @@ class MainWindow(object):
         self.app.pushButton_remove.clicked.connect(removeMaterial)
         self.app.toolButton_moveup.clicked.connect(moveUp)
         self.app.toolButton_movedown.clicked.connect(moveDown)
+
+    def editMaterial(self):
+        dir_material = Path(materials.__file__).parent.joinpath("resources")
+        if not dir_material.exists():
+            dir_material = ""
+
+        def loadMaterial():
+            pth_material, _ = QFileDialog.getOpenFileName(
+                caption="Open DeltaPV material file",
+                filter="*.yaml",
+                directory=str(dir_material))
+            if pth_material:
+                pth_material = Path(pth_material)
+                mat = materials.load_material(pth_material.stem)
+
+                for i in mat.__iter__():
+                    try:
+                        attr = getattr(self.app, f"lineEdit_{i[0]}")
+                        attr.setText(str(float(i[1])))
+                    except AttributeError:
+                        continue
+
+                self.ax_alpha.plot(materials.lam_interp,
+                                   mat.alpha,
+                                   label="alpha")
+                self.graphcanvas_alpha.draw_idle()
+
+                npdf = np.array([materials.lam_interp, mat.alpha]).transpose()
+                data = [[str(x[0]), str(x[1])] for x in npdf]
+                alphamodel = self.alphaTable(data)
+                self.app.tableView_alphaTable.setModel(alphamodel)
+
+        def saveMaterial():
+            pth_material, _ = QFileDialog.getSaveFileName(
+                caption="Save DeltaPV material file",
+                filter="*.yaml",
+                directory=str(dir_material))
+            if pth_material:
+                pass
+
+        self.app.pushButton_editLoadMaterial.clicked.connect(loadMaterial)
+        self.app.pushButton_editSaveMaterial.clicked.connect(saveMaterial)
+
+    def alphaTable(self, data):
+
+        class TableModel(QtCore.QAbstractTableModel):
+            def __init__(self, data):
+                super(TableModel, self).__init__()
+                self._data = data
+
+            def data(self, index, role):
+                if role == QtCore.Qt.DisplayRole:
+                    # See below for the nested-list data structure.
+                    # .row() indexes into the outer list,
+                    # .column() indexes into the sub-list
+                    return self._data[index.row()][index.column()]
+
+            def rowCount(self, index):
+                # The length of the outer list.
+                return len(self._data)
+
+            def columnCount(self, index):
+                # The following takes the first sub-list, and returns
+                # the length (only works if all rows are an equal length)
+                return len(self._data[0])
+        return TableModel(data)
 
     def menuBar(self):
 
