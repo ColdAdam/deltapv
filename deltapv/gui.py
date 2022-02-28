@@ -4,43 +4,32 @@ Created on Feb 21, 2022
 @author: adamt
 
 Setup and start the GUI window
-
-TODO: Add to Help
-n_points (i64): Number of points on a uniform grid
-Ls (List[f64]): Thicknesses of each layer
-mats (Union[List[Material], Material]): List of materials
-Ns (List[f64]): List of doping densities
-Snl (f64): Electron recombination velocity at front contact
-Snr (f64): Electron recombination velocity at back contact
-Spl (f64): Hole recombination velocity at front contact
-Spr (f64): Hole recombination velocity at back contact
-PhiM0 (f64, optional): Workfunction of front contact. Defaults 
- to -1.
-PhiML (f64, optional): Workfunction of back contact. Defaults 
- to -1.
 '''
 
 # TODO: change to from deltapv import gui, gui_designer
 import gui_designer, plotting
+import deltapv as dpv
 from deltapv import materials
-from pathlib import Path
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QFileDialog
 from matplotlib.backends.backend_qt5agg import (FigureCanvasQTAgg,
                                                 NavigationToolbar2QT)
-
 import matplotlib.pyplot as plt
+
+from pathlib import Path
 import sys
 import numpy as np
+import yaml
+
+from jax.lib import xla_bridge
+
+print("Jax config: %s" % xla_bridge.get_backend().platform)
 
 
 class MainWindow(object):
     """
     Boot the Qt designer code then connect up as needed
-
-    validator = QtGui.QDoubleValidator()
-    self.lineEdit_model_resolution.setValidator(validator)
     """
 
     def __init__(self, window):
@@ -52,6 +41,8 @@ class MainWindow(object):
         self.modelLayout()
         self.editMaterial()
         self.menuBar()
+        self.validators()
+        self.dpvSimulator()
 
     def graphs(self):
 
@@ -187,13 +178,24 @@ class MainWindow(object):
                 pth_material = Path(pth_material)
                 mat = materials.load_material(pth_material.stem)
 
-                for i in mat.__iter__():
+                properties = {"Eg": None, "Et": None, "Chi": None,
+                              "eps": None,
+                              "Nc": None, "Nv": None,
+                              "Ndop": None,
+                              "mn": None, "mp": None,
+                              "tn": None, "tp": None,
+                              "Cn": None, "Cp": None,
+                              "Br": None, "A": None}
+
+                for key in properties.keys():
+                    attr = getattr(self.app, f"lineEdit_{key}")
+                    attr.clear()
                     try:
-                        attr = getattr(self.app, f"lineEdit_{i[0]}")
-                        attr.setText(str(float(i[1])))
+                        attr.setText(str(float(getattr(mat, key))))
                     except AttributeError:
                         continue
 
+                self.ax_alpha.cla()
                 self.ax_alpha.plot(materials.lam_interp,
                                    mat.alpha,
                                    label="alpha")
@@ -205,12 +207,32 @@ class MainWindow(object):
                 self.app.tableView_alphaTable.setModel(alphamodel)
 
         def saveMaterial():
-            pth_material, _ = QFileDialog.getSaveFileName(
+            pth_material, ext = QFileDialog.getSaveFileName(
                 caption="Save DeltaPV material file",
                 filter="*.yaml",
                 directory=str(dir_material))
             if pth_material:
-                pass
+                pth_material = Path(pth_material)
+                name = pth_material.stem
+                if pth_material.suffix != '.yaml':
+                    pth_material = pth_material.parent.joinpath(
+                        name + ext.lstrip("*"))
+                material = {"name": name,
+                            "properties": {"Eg": None, "Et": None, "Chi": None,
+                                           "eps": None,
+                                           "Nc": None, "Nv": None,
+                                           "Ndop": None,
+                                           "mn": None, "mp": None,
+                                           "tn": None, "tp": None,
+                                           "Cn": None, "Cp": None,
+                                           "Br": None, "A": None}
+                            }
+                for i in material["properties"].keys():
+                    attr = getattr(self.app, f"lineEdit_{i}")
+                    if attr.text():
+                        material["properties"][i] = float(attr.text())
+                with open(pth_material, 'w') as f:
+                    yaml.dump(material, f)
 
         self.app.pushButton_editLoadMaterial.clicked.connect(loadMaterial)
         self.app.pushButton_editSaveMaterial.clicked.connect(saveMaterial)
@@ -247,6 +269,98 @@ class MainWindow(object):
             lambda: self.app.stackedWidget.setCurrentIndex(1))
         self.app.actionHelp.triggered.connect(
             lambda: self.app.stackedWidget.setCurrentIndex(2))
+
+    def validators(self):
+        validator = QtGui.QDoubleValidator()
+
+        self.app.lineEdit_A.setValidator(validator)
+        self.app.lineEdit_Br.setValidator(validator)
+        self.app.lineEdit_Chi.setValidator(validator)
+        self.app.lineEdit_Cn.setValidator(validator)
+        self.app.lineEdit_Cp.setValidator(validator)
+        self.app.lineEdit_Eg.setValidator(validator)
+        self.app.lineEdit_eps.setValidator(validator)
+        self.app.lineEdit_Et.setValidator(validator)
+        self.app.lineEdit_mn.setValidator(validator)
+        self.app.lineEdit_mp.setValidator(validator)
+        self.app.lineEdit_Nc.setValidator(validator)
+        self.app.lineEdit_Ndop.setValidator(validator)
+        self.app.lineEdit_Nv.setValidator(validator)
+        self.app.lineEdit_tn.setValidator(validator)
+        self.app.lineEdit_tp.setValidator(validator)
+
+        self.app.lineEdit_grid.setValidator(validator)
+        self.app.lineEdit_nvelleft.setValidator(validator)
+        self.app.lineEdit_nvelright.setValidator(validator)
+        self.app.lineEdit_pvelleft.setValidator(validator)
+        self.app.lineEdit_pvelright.setValidator(validator)
+        self.app.lineEdit_wfback.setValidator(validator)
+        self.app.lineEdit_wffront.setValidator(validator)
+
+        class DoubleValidator(QtWidgets.QStyledItemDelegate):
+            def createEditor(self, parent, option, index):
+                editor = super(DoubleValidator, self).createEditor(
+                    parent, option, index)
+                if isinstance(editor, QtWidgets.QLineEdit):
+                    editor.setValidator(validator)
+                return editor
+        delegate = DoubleValidator(self.app.tableWidget_modellayout)
+
+        self.app.tableWidget_modellayout.setItemDelegateForColumn(1, delegate)
+        self.app.tableWidget_modellayout.setItemDelegateForColumn(2, delegate)
+
+    def dpvSimulator(self):
+
+        def makeDesign():
+
+            try:
+                n_points = int(self.app.lineEdit_grid.text())
+                Snl = float(self.app.lineEdit_nvelleft.text())
+                Snr = float(self.app.lineEdit_nvelright.text())
+                Spl = float(self.app.lineEdit_pvelleft.text())
+                Spr = float(self.app.lineEdit_pvelright.text())
+            except ValueError:
+                print("Value error in setup.")
+                # TODO: print the tb
+                return
+
+            Ls = []
+            Ns = []
+            mats = []
+
+            rows = self.app.tableWidget_modellayout.rowCount()
+            try:
+                assert rows > 0
+            except AssertionError:
+                print("No material defined.")
+                return
+
+            for i in range(rows):
+                mats.append(
+                    self.app.tableWidget_modellayout.item(i, 0).text())
+                Ls.append(
+                    float(self.app.tableWidget_modellayout.item(i, 1).text()))
+                Ns.append(
+                    float(self.app.tableWidget_modellayout.item(i, 2).text()))
+
+            mats = [dpv.load_material(x) for x in mats]
+
+            self.des = dpv.make_design(n_points=n_points,
+                                       Ls=Ls,
+                                       mats=mats,
+                                       Ns=Ns,
+                                       Snl=Snl, Snr=Snr, Spl=Spl, Spr=Spr)
+
+        def simulate():
+            # check design is ready then trigger simulator
+            # self.results = dpv.simulate(design, ls, optics, n_steps, verbose)
+            ls = self.app.comboBox_lightsource.currentText()
+            self.results = dpv.simulate(self.des,
+                                        ls=ls)
+            pass
+
+        self.app.pushButton_makedesign.clicked.connect(makeDesign)
+        self.app.pushButton_simulate.clicked.connect(simulate)
 
 
 if __name__ == "__main__":
