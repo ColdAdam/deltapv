@@ -30,22 +30,34 @@ rcParams["savefig.dpi"] = 300
 
 
 def plot_bars(design: PVDesign=None,
-              gui: plt.Figure=None,
+              gui=None,
               filename=None) -> None:
 
-    plt_bars = gui
+    if not design:
+        # plt_bars = plt.Figure(figsize=(6, 5), dpi=100)
+        # ax1 = plt_bars.subplots()
 
-    ax1 = plt_bars.subplots()
-    ax1.set_zorder(1)
-    ax1.patch.set_visible(False)
+        plt_bars, ax1 = plt.subplots(1, 1, figsize=(6, 5), dpi=100)
 
-    ax1.set_xlabel("position / μm")
-    ax1.set_ylabel("energy / eV")
-    ax1.legend()
+        ax1.set_zorder(1)
+        ax1.patch.set_visible(False)
 
-    if not design and gui:
-        return plt_bars
+        ax1.set_xlabel("position / μm")
+        ax1.set_ylabel("energy / eV")
+        return plt_bars, ax1
     else:
+        if gui:
+            plt_bars = gui[0]
+            ax1 = gui[1]
+        else:
+            plt_bars, ax1 = plt.subplots(1, 1, figsize=(6, 5), dpi=100)
+
+            ax1.set_zorder(1)
+            ax1.patch.set_visible(False)
+
+            ax1.set_xlabel("position / μm")
+            ax1.set_ylabel("energy / eV")
+
         Ec = scales.energy * physics.Ec(design)
         Ev = scales.energy * physics.Ev(design)
         EF = scales.energy * physics.EF(design)
@@ -165,29 +177,38 @@ def plot_bars(design: PVDesign=None,
                         linewidth=2, linestyle="dashed")
 
         ax1.set_ylim(jnp.min(uv) * 1.5, 0)
-
+        ax1.legend()
         plt.tight_layout()
         if filename is not None:
             plt.savefig(filename)
         if not gui:
             plt.show()
+        else:
+            return plt_bars, ax1
 
 
 def plot_band_diagram(design: PVDesign=None,
                       pot: Potentials=None,
-                      gui: plt.Figure=None,
                       eq=False,
+                      gui=None,
                       filename=None) -> None:
 
-    plt_band = gui
-    ax1 = plt_band.add_subplot(111)
+    if not design and not pot:
+        plt_band, ax1 = plt.subplots(1, 1, figsize=(6, 5), dpi=100)
 
-    ax1.set_xlabel("position / μm")
-    ax1.set_ylabel("energy / eV")
-
-    if not design and not pot and gui:
-        return plt_band
+        ax1.set_xlabel("position / μm")
+        ax1.set_ylabel("energy / eV")
+        return plt_band, ax1
     else:
+        if gui:
+            plt_band = gui[0]
+            ax1 = gui[1]
+        else:
+            plt_band, ax1 = plt.subplots(1, 1, figsize=(6, 5), dpi=100)
+
+            ax1.set_xlabel("position / μm")
+            ax1.set_ylabel("energy / eV")
+
         Ec = -scales.energy * (design.Chi + pot.phi)
         Ev = -scales.energy * (design.Chi + design.Eg + pot.phi)
         x = scales.length * design.grid * 1e4
@@ -225,23 +246,32 @@ def plot_band_diagram(design: PVDesign=None,
         if filename is not None:
             plt_band.savefig(filename)
         if not gui:
-            plt_band.show()
+            plt.show()
+        else:
+            return plt_band, ax1
 
 
 def plot_iv_curve(voltages: Array=None,
                   currents: Array=None,
-                  gui: plt.Figure=None,
+                  gui=None,
                   filename=None) -> None:
 
-    plt_iv = gui
-    ax1 = plt_iv.add_subplot(111)
+    if voltages is None and currents is None:
+        plt_iv, ax1 = plt.subplots(1, 1, figsize=(6, 5), dpi=100)
 
-    ax1.set_xlabel("bias / V")
-    ax1.set_ylabel("current density / mA/cm$^2$")
-
-    if not voltages and not currents and gui:
-        return plt_iv
+        ax1.set_xlabel("bias / V")
+        ax1.set_ylabel("current density / mA/cm$^2$")
+        return plt_iv, ax1
     else:
+        if gui:
+            plt_iv = gui[0]
+            ax1 = gui[1]
+        else:
+            plt_iv, ax1 = plt.subplots(1, 1, figsize=(6, 5), dpi=100)
+
+            ax1.set_xlabel("bias / V")
+            ax1.set_ylabel("current density / mA/cm$^2$")
+
         currents = 1e3 * currents  # A / cm^2 -> mA / cm^2
         coef = spline.qspline(voltages, currents)
 
@@ -272,7 +302,7 @@ def plot_iv_curve(voltages: Array=None,
                  f"$FF = {round(FF, 2)}\%$\n$MPP = {round(pmax * 10, 2)}$ W/m$^2$",  # noqa
                  ha="center",
                  va="center")
-        ax1.gca().add_patch(rect)
+        plt_iv.gca().add_patch(rect)
         ax1.plot(vint, jint, color="black")
         ax1.scatter(voltages, currents, color="black", marker=".")
 
@@ -283,24 +313,36 @@ def plot_iv_curve(voltages: Array=None,
         if filename is not None:
             plt_iv.savefig(filename)
         if not gui:
-            plt_iv.show()
+            plt.show()
+        else:
+            return plt_iv, ax1
 
 
 def plot_charge(design: PVDesign=None,
                 pot: Potentials=None,
-                gui: plt.Figure=None,
+                gui=None,
                 filename=None):
 
-    plt_charge = gui
-    ax1 = plt_charge.add_subplot(111)
+    if not design and not pot:
+        # plt_charge = plt.Figure(figsize=(6, 5), dpi=100)
+        # ax1 = plt_charge.add_subplot(111)
+        plt_charge, ax1 = plt.subplots(1, 1, figsize=(6, 5), dpi=100)
 
-    ax1.set_yscale("log")
-    ax1.set_xlabel("position / μm")
-    ax1.set_ylabel("density / cm$^{-3}$")
-
-    if not design and not pot and gui:
-        return plt_charge
+        ax1.set_yscale("log")
+        ax1.set_xlabel("position / μm")
+        ax1.set_ylabel("density / cm$^{-3}$")
+        return plt_charge, ax1
     else:
+        if gui:
+            plt_charge = gui[0]
+            ax1 = gui[1]
+        else:
+            plt_charge, ax1 = plt.subplots(1, 1, figsize=(6, 5), dpi=100)
+
+            ax1.set_yscale("log")
+            ax1.set_xlabel("position / μm")
+            ax1.set_ylabel("density / cm$^{-3}$")
+
         n = scales.density * physics.n(design, pot)
         p = scales.density * physics.p(design, pot)
 
@@ -316,4 +358,6 @@ def plot_charge(design: PVDesign=None,
         if filename is not None:
             plt_charge.savefig(filename)
         if not gui:
-            plt_charge.show()
+            plt.show()
+        else:
+            return plt_charge, ax1

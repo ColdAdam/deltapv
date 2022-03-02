@@ -22,6 +22,8 @@ import sys
 import numpy as np
 import yaml
 
+import pickle
+
 from jax.lib import xla_bridge
 
 print("Jax config: %s" % xla_bridge.get_backend().platform)
@@ -44,12 +46,14 @@ class MainWindow(object):
         self.validators()
         self.dpvSimulator()
 
+        self.des = None
+
     def graphs(self):
 
-        band = plt.Figure(figsize=(6, 5), dpi=100)
-        model = plt.Figure(figsize=(6, 5), dpi=100)
-        charge = plt.Figure(figsize=(6, 5), dpi=100)
-        iv = plt.Figure(figsize=(6, 5), dpi=100)
+        # band = plt.Figure(figsize=(6, 5), dpi=100)
+        # model = plt.Figure(figsize=(6, 5), dpi=100)
+        # charge = plt.Figure(figsize=(6, 5), dpi=100)
+        # iv = plt.Figure(figsize=(6, 5), dpi=100)
 
         def alphaGraph():
 
@@ -62,10 +66,10 @@ class MainWindow(object):
 
             return plt_alpha, ax1
 
-        self.plt_band = plotting.plot_band_diagram(gui=band)
-        self.plt_model = plotting.plot_bars(gui=model)
-        self.plt_charge = plotting.plot_charge(gui=charge)
-        self.plt_iv = plotting.plot_iv_curve(gui=iv)
+        self.plt_band, self.ax_band = plotting.plot_band_diagram()
+        self.plt_model, self.ax_model = plotting.plot_bars()
+        self.plt_charge, self.ax_charge = plotting.plot_charge()
+        self.plt_iv, self.ax_iv = plotting.plot_iv_curve()
         self.plt_alpha, self.ax_alpha = alphaGraph()
 
         self.graphcanvas_iv = FigureCanvasQTAgg(self.plt_iv)
@@ -353,11 +357,34 @@ class MainWindow(object):
 
         def simulate():
             # check design is ready then trigger simulator
-            # self.results = dpv.simulate(design, ls, optics, n_steps, verbose)
             ls = self.app.comboBox_lightsource.currentText()
-            self.results = dpv.simulate(self.des,
-                                        ls=ls)
-            pass
+            if self.des is not None:
+                self.results = dpv.simulate(self.des,
+                                            ls=dpv.incident_light(ls))
+
+                self.plt_iv, self.ax_iv = plotting.plot_iv_curve(
+                    voltages=self.results["iv"][0],
+                    currents=self.results["iv"][1],
+                    gui=[self.plt_iv, self.ax_iv])
+
+                self.plt_model, self.ax_model = plotting.plot_bars(
+                    self.des,
+                    gui=[self.plt_model, self.ax_model])
+
+                self.plt_band, self.ax_band = plotting.plot_band_diagram(
+                    self.des,
+                    self.results["eq"], eq=True,
+                    gui=[self.plt_band, self.ax_band])
+
+                self.plt_charge, self.ax_charge = plotting.plot_charge(
+                    self.des,
+                    self.results["eq"],
+                    gui=[self.plt_charge, self.ax_charge])
+
+                self.graphcanvas_iv.draw_idle()
+                self.graphcanvas_band.draw_idle()
+                self.graphcanvas_charge.draw_idle()
+                self.graphcanvas_model.draw_idle()
 
         self.app.pushButton_makedesign.clicked.connect(makeDesign)
         self.app.pushButton_simulate.clicked.connect(simulate)
