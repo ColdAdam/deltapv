@@ -37,7 +37,7 @@ def plot_bars(design: PVDesign=None,
         # plt_bars = plt.Figure(figsize=(6, 5), dpi=100)
         # ax1 = plt_bars.subplots()
 
-        plt_bars, ax1 = plt.subplots(1, 1, figsize=(6, 5), dpi=100)
+        plt_bars, ax1 = plt.subplots(1, 1, figsize=(8, 5), dpi=100)
 
         ax1.set_zorder(1)
         ax1.patch.set_visible(False)
@@ -50,7 +50,7 @@ def plot_bars(design: PVDesign=None,
             plt_bars = gui[0]
             ax1 = gui[1]
         else:
-            plt_bars, ax1 = plt.subplots(1, 1, figsize=(6, 5), dpi=100)
+            plt_bars, ax1 = plt.subplots(1, 1, figsize=(8, 5), dpi=100)
 
             ax1.set_zorder(1)
             ax1.patch.set_visible(False)
@@ -194,7 +194,7 @@ def plot_band_diagram(design: PVDesign=None,
                       filename=None) -> None:
 
     if not design and not pot:
-        plt_band, ax1 = plt.subplots(1, 1, figsize=(6, 5), dpi=100)
+        plt_band, ax1 = plt.subplots(1, 1, figsize=(8, 5), dpi=100)
 
         ax1.set_xlabel("position / μm")
         ax1.set_ylabel("energy / eV")
@@ -204,7 +204,7 @@ def plot_band_diagram(design: PVDesign=None,
             plt_band = gui[0]
             ax1 = gui[1]
         else:
-            plt_band, ax1 = plt.subplots(1, 1, figsize=(6, 5), dpi=100)
+            plt_band, ax1 = plt.subplots(1, 1, figsize=(8, 5), dpi=100)
 
             ax1.set_xlabel("position / μm")
             ax1.set_ylabel("energy / eV")
@@ -257,7 +257,7 @@ def plot_iv_curve(voltages: Array=None,
                   filename=None) -> None:
 
     if voltages is None and currents is None:
-        plt_iv, ax1 = plt.subplots(1, 1, figsize=(6, 5), dpi=100)
+        plt_iv, ax1 = plt.subplots(1, 1, figsize=(8, 5), dpi=100)
 
         ax1.set_xlabel("bias / V")
         ax1.set_ylabel("current density / mA/cm$^2$")
@@ -267,7 +267,7 @@ def plot_iv_curve(voltages: Array=None,
             plt_iv = gui[0]
             ax1 = gui[1]
         else:
-            plt_iv, ax1 = plt.subplots(1, 1, figsize=(6, 5), dpi=100)
+            plt_iv, ax1 = plt.subplots(1, 1, figsize=(8, 5), dpi=100)
 
             ax1.set_xlabel("bias / V")
             ax1.set_ylabel("current density / mA/cm$^2$")
@@ -326,7 +326,7 @@ def plot_charge(design: PVDesign=None,
     if not design and not pot:
         # plt_charge = plt.Figure(figsize=(6, 5), dpi=100)
         # ax1 = plt_charge.add_subplot(111)
-        plt_charge, ax1 = plt.subplots(1, 1, figsize=(6, 5), dpi=100)
+        plt_charge, ax1 = plt.subplots(1, 1, figsize=(8, 5), dpi=100)
 
         ax1.set_yscale("log")
         ax1.set_xlabel("position / μm")
@@ -337,7 +337,7 @@ def plot_charge(design: PVDesign=None,
             plt_charge = gui[0]
             ax1 = gui[1]
         else:
-            plt_charge, ax1 = plt.subplots(1, 1, figsize=(6, 5), dpi=100)
+            plt_charge, ax1 = plt.subplots(1, 1, figsize=(8, 5), dpi=100)
 
             ax1.set_yscale("log")
             ax1.set_xlabel("position / μm")

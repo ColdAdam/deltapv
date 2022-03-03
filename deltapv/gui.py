@@ -23,6 +23,8 @@ import numpy as np
 import yaml
 
 import pickle
+import json
+from dataclasses import asdict
 
 from jax.lib import xla_bridge
 
@@ -57,7 +59,7 @@ class MainWindow(object):
 
         def alphaGraph():
 
-            plt_alpha = plt.Figure(figsize=(6, 5), dpi=100)
+            plt_alpha = plt.Figure(figsize=(8, 5), dpi=100)
             ax1 = plt_alpha.add_subplot(111)
 
             ax1.set_xlabel("Wavelength (nm)")
@@ -274,6 +276,11 @@ class MainWindow(object):
         self.app.actionHelp.triggered.connect(
             lambda: self.app.stackedWidget.setCurrentIndex(2))
 
+        self.app.actionSave_Simulation.triggered.connect(
+            lambda: self.dpv_io(func="save"))
+        self.app.actionLoad_Simulation.triggered.connect(
+            lambda: self.dpv_io(func="load"))
+
     def validators(self):
         validator = QtGui.QDoubleValidator()
 
@@ -347,6 +354,12 @@ class MainWindow(object):
                 Ns.append(
                     float(self.app.tableWidget_modellayout.item(i, 2).text()))
 
+            self.des_io = {"n_points": n_points,
+                           "Ls": Ls,
+                           "mats": mats,
+                           "Ns": Ns,
+                           "Snl": Snl, "Snr": Snr, "Spl": Spl, "Spr": Spr}
+
             mats = [dpv.load_material(x) for x in mats]
 
             self.des = dpv.make_design(n_points=n_points,
@@ -356,7 +369,8 @@ class MainWindow(object):
                                        Snl=Snl, Snr=Snr, Spl=Spl, Spr=Spr)
 
         def simulate():
-            # check design is ready then trigger simulator
+            # TODO: check design is ready then trigger simulator
+
             ls = self.app.comboBox_lightsource.currentText()
             if self.des is not None:
                 self.results = dpv.simulate(self.des,
@@ -381,13 +395,71 @@ class MainWindow(object):
                     self.results["eq"],
                     gui=[self.plt_charge, self.ax_charge])
 
-                self.graphcanvas_iv.draw_idle()
-                self.graphcanvas_band.draw_idle()
-                self.graphcanvas_charge.draw_idle()
-                self.graphcanvas_model.draw_idle()
+            self.graphcanvas_iv.draw_idle()
+            self.graphcanvas_band.draw_idle()
+            self.graphcanvas_charge.draw_idle()
+            self.graphcanvas_model.draw_idle()
 
         self.app.pushButton_makedesign.clicked.connect(makeDesign)
         self.app.pushButton_simulate.clicked.connect(simulate)
+
+    def dpv_io(self, func=None):
+
+        def load_dpv():
+            fpth, _ = QFileDialog.getOpenFileName(
+                caption="Open DeltaPV results file",
+                filter="*.pkl")
+            if fpth:
+                with open(fpth, 'rb') as f:
+                    des_io, results_io = pickle.load(f)
+                return des_io, results_io
+
+        def save_dpv(des, results):
+            fpth, _ = QFileDialog.getSaveFileName(
+                caption="Save DeltaPV results file",
+                filter="*.pkl")
+            if fpth:
+                with open(fpth, 'wb') as f:
+                    pickle.dump([des, results], f)
+
+        if func == "save":
+            save_dpv(self.des_io, self.results)
+
+        if func == "load":
+            des_io, results_io = load_dpv()
+            mats = [dpv.load_material(x) for x in des_io["mats"]]
+            self.des = dpv.make_design(n_points=des_io["n_points"],
+                                       Ls=des_io["Ls"],
+                                       mats=mats,
+                                       Ns=des_io["Ns"],
+                                       Snl=des_io["Snl"], Snr=des_io["Snr"],
+                                       Spl=des_io["Spl"], Spr=des_io["Spr"])
+            self.results = results_io
+            self.des_io = des_io
+
+            self.plt_iv, self.ax_iv = plotting.plot_iv_curve(
+                voltages=self.results["iv"][0],
+                currents=self.results["iv"][1],
+                gui=[self.plt_iv, self.ax_iv])
+
+            self.plt_model, self.ax_model = plotting.plot_bars(
+                self.des,
+                gui=[self.plt_model, self.ax_model])
+
+            self.plt_band, self.ax_band = plotting.plot_band_diagram(
+                self.des,
+                self.results["eq"], eq=True,
+                gui=[self.plt_band, self.ax_band])
+
+            self.plt_charge, self.ax_charge = plotting.plot_charge(
+                self.des,
+                self.results["eq"],
+                gui=[self.plt_charge, self.ax_charge])
+
+            self.graphcanvas_iv.draw_idle()
+            self.graphcanvas_band.draw_idle()
+            self.graphcanvas_charge.draw_idle()
+            self.graphcanvas_model.draw_idle()
 
 
 if __name__ == "__main__":
