@@ -11,8 +11,6 @@ from deltapv.simulator import (make_design, incident_light, equilibrium,
                                simulate, eff_at_bias, empty_design,
                                add_material, doping, contacts)
 from jax.config import config
-from PyQt5 import QtWidgets
-import gui
 
 config.update("jax_enable_x64", True)
 if os.environ.get("DEBUGNANS") == "TRUE":

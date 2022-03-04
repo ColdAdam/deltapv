@@ -7,28 +7,42 @@ Setup and start the GUI window
 '''
 
 # TODO: change to from deltapv import gui, gui_designer
-import gui_designer, plotting
 import deltapv as dpv
-from deltapv import materials
+from pathlib import Path
+import pickle
+import sys
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QFileDialog
+from deltapv import materials
+from jax.lib import xla_bridge
 from matplotlib.backends.backend_qt5agg import (FigureCanvasQTAgg,
                                                 NavigationToolbar2QT)
-import matplotlib.pyplot as plt
-
-from pathlib import Path
-import sys
-import numpy as np
 import yaml
+from time import sleep
 
-import pickle
-import json
-from dataclasses import asdict
+import gui_designer, plotting, simulator
+import matplotlib.pyplot as plt
+import numpy as np
 
-from jax.lib import xla_bridge
+import logging
+from logging import Handler
+log = logging.getLogger("deltapv")  # __name))
+log.addHandler(logging.NullHandler())
 
 print("Jax config: %s" % xla_bridge.get_backend().platform)
+print("Jax x64: %s" % getattr(dpv.config, "x64_enabled"))
+
+
+class LogHandler(QtCore.QObject, Handler):
+    record = QtCore.pyqtSignal(object)
+
+    def __init__(self, parent=None):
+        QtCore.QObject.__init__(self, parent)
+        Handler.__init__(self)
+
+    def emit(self, record):
+        self.record.emit(self.format(record))
 
 
 class MainWindow(object):
@@ -50,12 +64,17 @@ class MainWindow(object):
 
         self.des = None
 
-    def graphs(self):
+        self.handler = LogHandler()
+        self.handler.setFormatter(logging.Formatter(
+            fmt='%(asctime)s : %(message)s (%(levelname)s)',
+            datefmt='%m/%d/%Y %I:%M:%S %p'
+        ))
+        self.handler.record.connect(self.app.plainTextEdit.appendPlainText)
 
-        # band = plt.Figure(figsize=(6, 5), dpi=100)
-        # model = plt.Figure(figsize=(6, 5), dpi=100)
-        # charge = plt.Figure(figsize=(6, 5), dpi=100)
-        # iv = plt.Figure(figsize=(6, 5), dpi=100)
+        log.addHandler(self.handler)
+        log.info("Application Loaded")
+
+    def graphs(self):
 
         def alphaGraph():
 
@@ -275,6 +294,8 @@ class MainWindow(object):
             lambda: self.app.stackedWidget.setCurrentIndex(1))
         self.app.actionHelp.triggered.connect(
             lambda: self.app.stackedWidget.setCurrentIndex(2))
+        self.app.actionConsole_Log.triggered.connect(
+            lambda: self.app.stackedWidget.setCurrentIndex(3))
 
         self.app.actionSave_Simulation.triggered.connect(
             lambda: self.dpv_io(func="save"))
@@ -372,9 +393,18 @@ class MainWindow(object):
             # TODO: check design is ready then trigger simulator
 
             ls = self.app.comboBox_lightsource.currentText()
+
             if self.des is not None:
-                self.results = dpv.simulate(self.des,
-                                            ls=dpv.incident_light(ls))
+
+                self.app.stackedWidget.setCurrentIndex(3)
+                self.app.centralwidget.repaint()
+                # TODO: dig into solar sim IV emits and mimic this to
+                # the simulator function. such that logging is updated
+                # on the gui as the simulator runs
+
+                self.results = simulator.simulate(self.des,
+                                                  ls=dpv.incident_light(ls),
+                                                  gui=self.app)
 
                 self.plt_iv, self.ax_iv = plotting.plot_iv_curve(
                     voltages=self.results["iv"][0],
@@ -405,61 +435,58 @@ class MainWindow(object):
 
     def dpv_io(self, func=None):
 
-        def load_dpv():
+        if func == "save":
+            # TODO: assert results, if not setup empty results
+            # TODO: assert model design
+            fpth, _ = QFileDialog.getSaveFileName(
+                caption="Save DeltaPV results file",
+                filter="*.pkl")
+            if fpth:
+                with open(fpth, 'wb') as f:
+                    pickle.dump([self.des_io, self.results], f)
+
+        if func == "load":
             fpth, _ = QFileDialog.getOpenFileName(
                 caption="Open DeltaPV results file",
                 filter="*.pkl")
             if fpth:
                 with open(fpth, 'rb') as f:
                     des_io, results_io = pickle.load(f)
-                return des_io, results_io
+                mats = [dpv.load_material(x) for x in des_io["mats"]]
+                self.des = dpv.make_design(n_points=des_io["n_points"],
+                                           Ls=des_io["Ls"],
+                                           mats=mats,
+                                           Ns=des_io["Ns"],
+                                           Snl=des_io["Snl"],
+                                           Snr=des_io["Snr"],
+                                           Spl=des_io["Spl"],
+                                           Spr=des_io["Spr"])
+                self.results = results_io
+                self.des_io = des_io
 
-        def save_dpv(des, results):
-            fpth, _ = QFileDialog.getSaveFileName(
-                caption="Save DeltaPV results file",
-                filter="*.pkl")
-            if fpth:
-                with open(fpth, 'wb') as f:
-                    pickle.dump([des, results], f)
+                self.plt_iv, self.ax_iv = plotting.plot_iv_curve(
+                    voltages=self.results["iv"][0],
+                    currents=self.results["iv"][1],
+                    gui=[self.plt_iv, self.ax_iv])
 
-        if func == "save":
-            save_dpv(self.des_io, self.results)
+                self.plt_model, self.ax_model = plotting.plot_bars(
+                    self.des,
+                    gui=[self.plt_model, self.ax_model])
 
-        if func == "load":
-            des_io, results_io = load_dpv()
-            mats = [dpv.load_material(x) for x in des_io["mats"]]
-            self.des = dpv.make_design(n_points=des_io["n_points"],
-                                       Ls=des_io["Ls"],
-                                       mats=mats,
-                                       Ns=des_io["Ns"],
-                                       Snl=des_io["Snl"], Snr=des_io["Snr"],
-                                       Spl=des_io["Spl"], Spr=des_io["Spr"])
-            self.results = results_io
-            self.des_io = des_io
+                self.plt_band, self.ax_band = plotting.plot_band_diagram(
+                    self.des,
+                    self.results["eq"], eq=True,
+                    gui=[self.plt_band, self.ax_band])
 
-            self.plt_iv, self.ax_iv = plotting.plot_iv_curve(
-                voltages=self.results["iv"][0],
-                currents=self.results["iv"][1],
-                gui=[self.plt_iv, self.ax_iv])
+                self.plt_charge, self.ax_charge = plotting.plot_charge(
+                    self.des,
+                    self.results["eq"],
+                    gui=[self.plt_charge, self.ax_charge])
 
-            self.plt_model, self.ax_model = plotting.plot_bars(
-                self.des,
-                gui=[self.plt_model, self.ax_model])
-
-            self.plt_band, self.ax_band = plotting.plot_band_diagram(
-                self.des,
-                self.results["eq"], eq=True,
-                gui=[self.plt_band, self.ax_band])
-
-            self.plt_charge, self.ax_charge = plotting.plot_charge(
-                self.des,
-                self.results["eq"],
-                gui=[self.plt_charge, self.ax_charge])
-
-            self.graphcanvas_iv.draw_idle()
-            self.graphcanvas_band.draw_idle()
-            self.graphcanvas_charge.draw_idle()
-            self.graphcanvas_model.draw_idle()
+                self.graphcanvas_iv.draw_idle()
+                self.graphcanvas_band.draw_idle()
+                self.graphcanvas_charge.draw_idle()
+                self.graphcanvas_model.draw_idle()
 
 
 if __name__ == "__main__":
