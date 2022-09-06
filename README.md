@@ -1,6 +1,13 @@
 # ∂PV
 A photovoltaic simulator with automatic differentation, built on `JAX`. 
 
+Pull requests welcome!
+
+Currently, only inorganic materials can be simulated.
+
+
+For more examples, including performing efficiency optimization of a perovskite solar cell and discovering unknown material properties in a cell, see the following [Google Colab](https://colab.research.google.com/drive/1d2vY01LhXUKOHasNOOZj17FO7qGgWBph?usp=sharing)
+
 
 To install via `pip`, simply use the command
 
@@ -10,7 +17,7 @@ pip install deltapv
 
 `deltapv` features a simple interface for most common cell structures. For a simple p-n homojunction, the following code computes the IV curve:
 
-```
+```python
 import deltapv as dpv
 
 material = dpv.create_material(Chi=3.9,
@@ -36,7 +43,7 @@ results = dpv.simulate(des)
 
 Several convenient plotting functions are provided to visualize important quantities.
 
-```
+```python
 dpv.plot_iv_curve(*results["iv"])
 dpv.plot_bars(des)
 dpv.plot_band_diagram(des, results["eq"], eq=True)
@@ -49,7 +56,7 @@ dpv.plot_charge(des, results["eq"])
 <img src="plots/charge.png" alt="charge" width="500"/>
 
 
-For more examples, including performing efficiency optimization of a perovskite solar cell and discovering unknown material properties in a cell, see the following Google Colab notebook: https://colab.research.google.com/drive/1d2vY01LhXUKOHasNOOZj17FO7qGgWBph?usp=sharing. For an overview on PV cells and the physics behind the drift-diffusion model, see this helpful resource: https://www.pveducation.org.
+For an overview on PV cells and the physics behind the drift-diffusion model, see this helpful resource: https://www.pveducation.org.
 
 
 If you use ∂PV, please kindly cite the following paper:
